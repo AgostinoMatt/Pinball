@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Pinball Creator/Demo/Main Menu/Other/MM_Table_02.unity
+- path: Assets/Pinball Creator/Demo/Main Menu/Other/MM_Table_03.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0
