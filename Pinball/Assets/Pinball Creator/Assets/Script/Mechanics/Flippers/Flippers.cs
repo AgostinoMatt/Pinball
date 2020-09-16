@@ -2,8 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
-public class Flippers : MonoBehaviour {
+public class Flippers : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+{
 
 	private bool 						_GetButton = false;				// true if you want input manage by Edit -> Project Settings -> Input
 	public string 						name_F;							// the keyboard input to move the flipper	
@@ -31,7 +34,11 @@ public class Flippers : MonoBehaviour {
 
 	private bool 						b_PullPlunger = false;			// if you pull the plunger you can't use right flippers
 
-	void Awake(){																	// --> Awake
+    private bool pointerDown = false;
+
+    public UnityEvent holdButton;
+
+    void Awake(){																	// --> Awake
 		Physics.IgnoreLayerCollision(8, 9, true);										// Ignore collision between Layer 8 : "Board" and Layer 9 : "Paddle"
 		Physics.IgnoreLayerCollision(10, 9, true);										// Ignore collision between Layer 8 : "Board" and Layer 9 : "Paddle"
 		Physics.IgnoreLayerCollision(11, 9, true);										// Ignore collision between Layer 8 : "Board" and Layer 9 : "Paddle"
@@ -50,8 +57,23 @@ public class Flippers : MonoBehaviour {
 		StartCoroutine ("WaitToInit");
 
 	}
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        pointerDown = true;
+        Debug.Log(this.gameObject.name + " Was Clicked.");
+    }
 
-	IEnumerator WaitToInit(){
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        Reset();
+    }
+
+    public void Reset()
+    {
+        pointerDown = false;
+    }
+
+    IEnumerator WaitToInit(){
 		yield return new WaitForEndOfFrame();
 		if(b_Flipper_Left && gameManager_Input!=null && !_GetButton)name_F = gameManager_Input.F_flipper_Left();	// Choose the keyboard button sttup on Game_Manager object on the hierarchy
 		if(b_Flipper_Right && gameManager_Input!=null && !_GetButton)name_F = gameManager_Input.F_flipper_Right();	// Choose the keyboard button sttup on Game_Manager object on the hierarchy
@@ -165,7 +187,10 @@ public class Flippers : MonoBehaviour {
 			hinge.motor = motor;
 			hinge.useMotor = false;
 		}
-	}
+
+       
+
+    }
 
 
 	public void  F_InputGetButton(){														// use Edit -> Project Settings -> Input for Flippers
@@ -186,4 +211,17 @@ public class Flippers : MonoBehaviour {
 	public void  DeactivateFlipper(){											// Use This function is you want to deactivate flippers outside this script. Call SendMessage("DeactivateFlipper");
 		b_touch = false;
 	}
+
+    public void ButtonFlipper()
+    {
+        if (pointerDown)
+        {
+            ActivateFlipper();
+        }
+        else if (!pointerDown)
+        {
+            DeactivateFlipper();
+        }
+
+    }
 }
